@@ -1,6 +1,6 @@
 // The Swift Programming Language
 // https://docs.swift.org/swift-book
-
+#if os(iOS)
 import SwiftUI
 
 private struct WindowControlsSafeAreaInsetModifier<Overlay: View>: ViewModifier {
@@ -68,3 +68,4 @@ public extension View {
         )
     }
 }
+#endif

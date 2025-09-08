@@ -5,7 +5,7 @@
 //  Created by lynnswap on 2025/09/08.
 //
 
-
+#if os(iOS)
 import SwiftUI
 import Combine
 @MainActor
@@ -138,3 +138,4 @@ final class ProbeView: UIView {
     }
 
 }
+#endif
