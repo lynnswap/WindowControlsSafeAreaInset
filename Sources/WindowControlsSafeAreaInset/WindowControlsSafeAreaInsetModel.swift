@@ -10,7 +10,7 @@ import SwiftUI
 import Combine
 @MainActor
 @Observable
-final class WindowControlsSafeAreaInsetModel {
+public final class WindowControlsSafeAreaInsetModel {
 
     var minX: CGFloat = .zero
     var installed: Bool = false
@@ -20,7 +20,9 @@ final class WindowControlsSafeAreaInsetModel {
 
     @ObservationIgnored private var cancellables = Set<AnyCancellable>()
 
-    func attach(to containerView: UIView) {
+    public init() {}
+
+    public func attach(to containerView: UIView) {
         guard !installed || self.containerView !== containerView else { return }
         self.containerView = containerView
         installTransparentButton(into: containerView)
@@ -28,7 +30,7 @@ final class WindowControlsSafeAreaInsetModel {
         installed = true
     }
 
-    func detach() {
+    public func detach() {
         cancellables.removeAll()
         button?.removeFromSuperview()
         button = nil
@@ -95,12 +97,16 @@ final class WindowControlsSafeAreaInsetModel {
             .store(in: &cancellables)
     }
 }
-struct ContainerReader: UIViewRepresentable {
-    typealias UIViewType = ProbeView
+public struct ContainerReader: UIViewRepresentable {
+    public typealias UIViewType = UIView
 
     var onResolve: @MainActor (_ containerView: UIView, _ window: UIWindow?) -> Void
 
-    func makeUIView(context: Context) -> ProbeView {
+    public init(onResolve: @escaping @MainActor (_ containerView: UIView, _ window: UIWindow?) -> Void) {
+        self.onResolve = onResolve
+    }
+
+    public func makeUIView(context: Context) -> UIView {
         let v = ProbeView()
         v.isUserInteractionEnabled = false
         v.backgroundColor = .clear
@@ -110,7 +116,7 @@ struct ContainerReader: UIViewRepresentable {
         return v
     }
 
-    func updateUIView(_ uiView: ProbeView, context: Context) {
+    public func updateUIView(_ uiView: UIView, context: Context) {
     }
 }
 
