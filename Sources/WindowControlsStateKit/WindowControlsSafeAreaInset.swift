@@ -14,6 +14,7 @@ private struct WindowControlsSafeAreaInsetModifier<Overlay: View>: ViewModifier 
         if #available(iOS 26.0, *) {
             if let model{
                 content
+                    .environment(model)
                     .overlay(alignment: alignment) {
                         overlay()
                             .padding(.leading, model.minX + extraLeading)
