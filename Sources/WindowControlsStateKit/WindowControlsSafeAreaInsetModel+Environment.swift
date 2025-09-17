@@ -6,15 +6,8 @@
 #if os(iOS)
 import SwiftUI
 
-private struct WindowControlsSafeAreaInsetModelKey: EnvironmentKey {
-    static let defaultValue: WindowControlsSafeAreaInsetModel? = nil
-}
-
 public extension EnvironmentValues {
-    var windowControlsSafeAreaInsetModel: WindowControlsSafeAreaInsetModel? {
-        get { self[WindowControlsSafeAreaInsetModelKey.self] }
-        set { self[WindowControlsSafeAreaInsetModelKey.self] = newValue }
-    }
+    @Entry var windowControlsSafeAreaInsetModel: WindowControlsSafeAreaInsetModel? = nil
 }
 
 private struct WindowControlsSafeAreaInsetModelProvider: ViewModifier {
