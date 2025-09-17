@@ -8,6 +8,7 @@
 #if os(iOS)
 import SwiftUI
 import Combine
+
 @MainActor
 @Observable
 public final class WindowControlsSafeAreaInsetModel {
@@ -64,7 +65,7 @@ public final class WindowControlsSafeAreaInsetModel {
         btn.accessibilityLabel = "Window controls area"
 
         containerView.addSubview(btn)
-        
+
         let guide: UILayoutGuide
         if #available(iOS 26.0, *) {
             guide = containerView.layoutGuide(for: .margins(cornerAdaptation: .horizontal))
@@ -103,98 +104,6 @@ public final class WindowControlsSafeAreaInsetModel {
                 self?.minX = newMinX
             }
             .store(in: &cancellables)
-    }
-}
-struct ContainerReader: UIViewRepresentable {
-    typealias UIViewType = ProbeView
-
-    let model: WindowControlsSafeAreaInsetModel
-
-    init(model: WindowControlsSafeAreaInsetModel) {
-        self.model = model
-    }
-
-    func makeUIView(context: Context) -> ProbeView {
-        ProbeView(model: model)
-    }
-
-    func updateUIView(_ uiView: ProbeView, context: Context) {
-    }
-}
-
-@MainActor
-final class ProbeView: UIView {
-    init(model: WindowControlsSafeAreaInsetModel) {
-        self.model = model
-        super.init(frame: .zero)
-        isUserInteractionEnabled = false
-        backgroundColor = .clear
-    }
-
-    required init?(coder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
-    }
-
-    weak var model: WindowControlsSafeAreaInsetModel? {
-        didSet {
-            guard oldValue !== model else {
-                resolveAttachment()
-                return
-            }
-            oldValue?.detach()
-            resolveAttachment()
-        }
-    }
-
-    override func didMoveToWindow() {
-        super.didMoveToWindow()
-        resolveAttachment()
-    }
-
-    private func resolveAttachment() {
-        guard let model else { return }
-        if let window {
-            model.attach(to: self, window: window)
-        } else {
-            model.detach()
-        }
-    }
-}
-
-private struct WindowControlsSafeAreaInsetModelKey: EnvironmentKey {
-    static let defaultValue: WindowControlsSafeAreaInsetModel? = nil
-}
-
-public extension EnvironmentValues {
-    var windowControlsSafeAreaInsetModel: WindowControlsSafeAreaInsetModel? {
-        get { self[WindowControlsSafeAreaInsetModelKey.self] }
-        set { self[WindowControlsSafeAreaInsetModelKey.self] = newValue }
-    }
-}
-
-private struct WindowControlsSafeAreaInsetModelProvider: ViewModifier {
-    @State private var model: WindowControlsSafeAreaInsetModel?
-
-    func body(content: Content) -> some View {
-        if let model{
-            content
-                .environment(\.windowControlsSafeAreaInsetModel, model)
-        }else{
-            Color.clear
-                .onAppear(){
-                    self.model = WindowControlsSafeAreaInsetModel()
-                }
-        }
-    }
-}
-
-public extension View {
-    func windowControlsSafeAreaInsetModel() -> some View {
-        modifier(WindowControlsSafeAreaInsetModelProvider())
-    }
-
-    func windowControlsSafeAreaInsetModel(_ model: WindowControlsSafeAreaInsetModel?) -> some View {
-        environment(\.windowControlsSafeAreaInsetModel, model)
     }
 }
 #endif
