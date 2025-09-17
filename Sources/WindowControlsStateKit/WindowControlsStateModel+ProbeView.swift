@@ -53,8 +53,8 @@ final class ProbeView: UIView {
 
     private func resolveAttachment() {
         guard let model else { return }
-        if let window {
-            model.attach(to: self, window: window)
+        if window != nil {
+            model.attach(to: self)
         } else {
             model.detach()
         }

@@ -17,24 +17,20 @@ public final class WindowControlsStateModel {
     var installed: Bool = false
 
     private weak var containerView: UIView?
-    private weak var window: UIWindow?
     private weak var button: UIButton?
 
     @ObservationIgnored private var cancellables = Set<AnyCancellable>()
 
     public init() {}
 
-    public func attach(to containerView: UIView, window: UIWindow) {
-        if let currentWindow = self.window,
-           currentWindow === window,
-           let currentContainer = self.containerView,
+    public func attach(to containerView: UIView) {
+        if let currentContainer = self.containerView,
            currentContainer === containerView {
             return
         }
 
         detach()
 
-        self.window = window
         self.containerView = containerView
         installTransparentButton(into: containerView)
         startObservingMinX()
@@ -46,7 +42,6 @@ public final class WindowControlsStateModel {
         button?.removeFromSuperview()
         button = nil
         containerView = nil
-        window = nil
         installed = false
     }
 
