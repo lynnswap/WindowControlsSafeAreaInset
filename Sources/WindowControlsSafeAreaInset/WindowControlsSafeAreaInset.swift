@@ -22,13 +22,7 @@ private struct WindowControlsSafeAreaInsetModifier<Overlay: View>: ViewModifier 
                             .animation(.default, value: model.minX)
                     }
                     .background(
-                        ContainerReader { view, window in
-                            if let window {
-                                model.attach(to: view, window: window)
-                            } else {
-                                model.detach()
-                            }
-                        }
+                        ContainerReader(model: model)
                     )
             }else{
                 content
