@@ -1,10 +1,11 @@
-# WindowControlsSafeAreaInset
+# WindowControlsStateKit
 
 A tiny SwiftUI helper to keep your UI clear of the new window control buttons introduced on iPadOS 26. It dynamically offsets your overlay content so buttons you place near the top‑leading corner don’t collide with the system’s window controls.
 
 ## Features
+- Ships with a `WindowControlsSafeAreaInsetModel` you can share via environment
 - Handles iPadOS 26 window controls inset automatically when available
-- Simple SwiftUI API
+- Simple SwiftUI API for overlay alignment and custom padding
 - Graceful fallback on earlier OS/toolchains (applies only your extra leading padding)
 
 ## Requirements
@@ -20,13 +21,14 @@ Import the module and wrap your overlay controls with the modifier. By default i
 
 ```swift
 import SwiftUI
-import WindowControlsSafeAreaInset
+import WindowControlsStateKit
 
 struct ContentView: View {
     var body: some View {
         List{
             /* ... */
         }
+        .windowControlsSafeAreaInsetModel()
         .windowControlsSafeAreaInset {
             Button("Done") { /* ... */ }
         }
@@ -34,7 +36,17 @@ struct ContentView: View {
 }
 ```
 
-On iPadOS 26 with a Swift 6.2+ build, the overlay’s leading padding automatically reflects the horizontal inset of the system window controls. On earlier systems it behaves like a normal overlay plus your `extraLeading`.
+The `.windowControlsSafeAreaInsetModel()` modifier installs a shared `WindowControlsSafeAreaInsetModel` instance so every descendant overlay can read the latest control position. On iPadOS 26 with a Swift 6.2+ build, the overlay’s leading padding automatically reflects the horizontal inset of the system window controls. On earlier systems it behaves like a normal overlay plus your `extraLeading`.
+
+If you already manage the model yourself, you can pass it down explicitly:
+
+```swift
+let model = WindowControlsSafeAreaInsetModel()
+
+List { /* ... */ }
+    .windowControlsSafeAreaInsetModel(model)
+    .windowControlsSafeAreaInset { /* overlay */ }
+```
 
 ## Limitations
 - Dynamic avoidance requires both iPadOS 26+ and Swift 6.2+ at build time.
@@ -42,4 +54,3 @@ On iPadOS 26 with a Swift 6.2+ build, the overlay’s leading padding automatica
 
 ## License
 MIT — see `LICENSE` for details.
-
