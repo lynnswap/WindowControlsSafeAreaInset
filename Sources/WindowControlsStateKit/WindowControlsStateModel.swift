@@ -1,5 +1,5 @@
 //
-//  WindowControlsSafeAreaInsetModel.swift
+//  WindowControlsStateModel.swift
 //  WindowControlsSafeAreaInset
 //
 //  Created by lynnswap on 2025/09/08.
@@ -11,7 +11,7 @@ import Combine
 
 @MainActor
 @Observable
-public final class WindowControlsSafeAreaInsetModel {
+public final class WindowControlsStateModel {
 
     public var minX: CGFloat = .zero
     var installed: Bool = false
@@ -90,18 +90,17 @@ public final class WindowControlsSafeAreaInsetModel {
 
         let positionP = button.layer
             .publisher(for: \.position, options: [.initial, .new])
-            .compactMap { [weak button] _ in button?.frame.minX }
+            .compactMap { [weak button] _ in button?.frame }
 
         let boundsP = button.layer
             .publisher(for: \.bounds, options: [.new])
-            .compactMap { [weak button] _ in button?.frame.minX }
+            .compactMap { [weak button] _ in button?.frame }
 
         positionP
             .merge(with: boundsP)
-//            .removeDuplicates { abs($0 - $1) < 0.5 }
             .receive(on: DispatchQueue.main)
-            .sink { [weak self] newMinX in
-                self?.minX = newMinX
+            .sink { [weak self] newValue in
+                self?.minX = newValue.minX
             }
             .store(in: &cancellables)
     }

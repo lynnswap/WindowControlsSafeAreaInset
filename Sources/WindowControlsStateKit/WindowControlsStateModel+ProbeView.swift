@@ -1,5 +1,5 @@
 //
-//  WindowControlsSafeAreaInsetModel+ProbeView.swift
+//  WindowControlsStateModel+ProbeView.swift
 //  WindowControlsSafeAreaInset
 //
 
@@ -9,9 +9,9 @@ import SwiftUI
 struct ContainerReader: UIViewRepresentable {
     typealias UIViewType = ProbeView
 
-    let model: WindowControlsSafeAreaInsetModel
+    let model: WindowControlsStateModel
 
-    init(model: WindowControlsSafeAreaInsetModel) {
+    init(model: WindowControlsStateModel) {
         self.model = model
     }
 
@@ -24,7 +24,7 @@ struct ContainerReader: UIViewRepresentable {
 
 @MainActor
 final class ProbeView: UIView {
-    init(model: WindowControlsSafeAreaInsetModel) {
+    init(model: WindowControlsStateModel) {
         self.model = model
         super.init(frame: .zero)
         isUserInteractionEnabled = false
@@ -35,7 +35,7 @@ final class ProbeView: UIView {
         fatalError("init(coder:) has not been implemented")
     }
 
-    weak var model: WindowControlsSafeAreaInsetModel? {
+    weak var model: WindowControlsStateModel? {
         didSet {
             guard oldValue !== model else {
                 resolveAttachment()

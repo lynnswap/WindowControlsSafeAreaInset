@@ -4,8 +4,8 @@
 import SwiftUI
 
 private struct WindowControlsSafeAreaInsetModifier<Overlay: View>: ViewModifier {
-    @Environment(\.windowControlsSafeAreaInsetModel) private var environmentModel
-    @State private var fallbackModel: WindowControlsSafeAreaInsetModel?
+    @Environment(\.windowControlsStateModel) private var environmentModel
+    @State private var fallbackModel: WindowControlsStateModel?
 
     let alignment: Alignment
     let extraLeading: CGFloat
@@ -30,7 +30,7 @@ private struct WindowControlsSafeAreaInsetModifier<Overlay: View>: ViewModifier 
                         Color.clear
                             .onAppear {
                                 if fallbackModel == nil {
-                                    fallbackModel = WindowControlsSafeAreaInsetModel()
+                                    fallbackModel = WindowControlsStateModel()
                                 }
                             }
                     )
