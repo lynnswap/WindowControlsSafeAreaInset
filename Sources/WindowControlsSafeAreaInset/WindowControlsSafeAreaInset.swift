@@ -4,7 +4,8 @@
 import SwiftUI
 
 private struct WindowControlsSafeAreaInsetModifier<Overlay: View>: ViewModifier {
-    @State private var model :WindowControlsSafeAreaInsetModel?
+    @Environment(\.windowControlsSafeAreaInsetModel) private var environmentModel
+    @State private var fallbackModel: WindowControlsSafeAreaInsetModel?
 
     let alignment: Alignment
     let extraLeading: CGFloat
@@ -12,7 +13,7 @@ private struct WindowControlsSafeAreaInsetModifier<Overlay: View>: ViewModifier 
 
     func body(content: Content) -> some View {
         if #available(iOS 26.0, *) {
-            if let model {
+            if let model = environmentModel ?? fallbackModel {
                 content
                     .overlay(alignment: alignment) {
                         overlay()
@@ -22,18 +23,23 @@ private struct WindowControlsSafeAreaInsetModifier<Overlay: View>: ViewModifier 
                     }
                     .background(
                         ContainerReader { view, window in
-                            if window == nil {
-                                model.detach()
+                            if let window {
+                                model.attach(to: view, window: window)
                             } else {
-                                model.attach(to: view)
+                                model.detach()
                             }
                         }
                     )
             }else{
-                Color.clear
-                    .onAppear(){
-                        model = WindowControlsSafeAreaInsetModel()
-                    }
+                content
+                    .background(
+                        Color.clear
+                            .onAppear {
+                                if fallbackModel == nil {
+                                    fallbackModel = WindowControlsSafeAreaInsetModel()
+                                }
+                            }
+                    )
             }
         }else{
             content
