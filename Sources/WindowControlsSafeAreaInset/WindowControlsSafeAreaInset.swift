@@ -12,7 +12,6 @@ private struct WindowControlsSafeAreaInsetModifier<Overlay: View>: ViewModifier 
     let overlay: () -> Overlay
 
     func body(content: Content) -> some View {
-#if swift(>=6.2)
         if #available(iOS 26.0, *) {
             if let model = environmentModel ?? fallbackModel {
                 content
@@ -49,13 +48,6 @@ private struct WindowControlsSafeAreaInsetModifier<Overlay: View>: ViewModifier 
                         .padding(.leading, extraLeading)
                 }
         }
-#else
-        content
-            .overlay(alignment: alignment) {
-                overlay()
-                    .padding(.leading, extraLeading)
-            }
-#endif
     }
 }
 
