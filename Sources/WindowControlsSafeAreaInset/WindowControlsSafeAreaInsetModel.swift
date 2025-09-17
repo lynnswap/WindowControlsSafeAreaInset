@@ -54,15 +54,11 @@ public final class WindowControlsSafeAreaInsetModel {
         containerView.addSubview(btn)
         
         let guide: UILayoutGuide
-#if swift(>=6.2)
         if #available(iOS 26.0, *) {
             guide = containerView.layoutGuide(for: .margins(cornerAdaptation: .horizontal))
         } else {
             guide = containerView.layoutMarginsGuide
         }
-#else
-        guide = containerView.layoutMarginsGuide
-#endif
 
         NSLayoutConstraint.activate([
             btn.topAnchor.constraint(equalTo: guide.topAnchor, constant: 8),
