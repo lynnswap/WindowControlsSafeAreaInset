@@ -16,14 +16,24 @@ public final class WindowControlsSafeAreaInsetModel {
     var installed: Bool = false
 
     private weak var containerView: UIView?
+    private weak var window: UIWindow?
     private weak var button: UIButton?
 
     @ObservationIgnored private var cancellables = Set<AnyCancellable>()
 
     public init() {}
 
-    public func attach(to containerView: UIView) {
-        guard !installed || self.containerView !== containerView else { return }
+    public func attach(to containerView: UIView, window: UIWindow) {
+        if let currentWindow = self.window,
+           currentWindow === window,
+           let currentContainer = self.containerView,
+           currentContainer === containerView {
+            return
+        }
+
+        detach()
+
+        self.window = window
         self.containerView = containerView
         installTransparentButton(into: containerView)
         startObservingMinX()
@@ -34,6 +44,8 @@ public final class WindowControlsSafeAreaInsetModel {
         cancellables.removeAll()
         button?.removeFromSuperview()
         button = nil
+        containerView = nil
+        window = nil
         installed = false
     }
 
@@ -137,5 +149,42 @@ final class ProbeView: UIView {
         // if didAttachOnce { onWindowChanged?(self, window) }
     }
 
+}
+
+private struct WindowControlsSafeAreaInsetModelKey: EnvironmentKey {
+    static let defaultValue: WindowControlsSafeAreaInsetModel? = nil
+}
+
+public extension EnvironmentValues {
+    var windowControlsSafeAreaInsetModel: WindowControlsSafeAreaInsetModel? {
+        get { self[WindowControlsSafeAreaInsetModelKey.self] }
+        set { self[WindowControlsSafeAreaInsetModelKey.self] = newValue }
+    }
+}
+
+private struct WindowControlsSafeAreaInsetModelProvider: ViewModifier {
+    @State private var model: WindowControlsSafeAreaInsetModel?
+
+    func body(content: Content) -> some View {
+        if let model{
+            content
+                .environment(\.windowControlsSafeAreaInsetModel, model)
+        }else{
+            Color.clear
+                .onAppear(){
+                    self.model = WindowControlsSafeAreaInsetModel()
+                }
+        }
+    }
+}
+
+public extension View {
+    func windowControlsSafeAreaInsetModel() -> some View {
+        modifier(WindowControlsSafeAreaInsetModelProvider())
+    }
+
+    func windowControlsSafeAreaInsetModel(_ model: WindowControlsSafeAreaInsetModel?) -> some View {
+        environment(\.windowControlsSafeAreaInsetModel, model)
+    }
 }
 #endif
