@@ -13,7 +13,7 @@ import Combine
 @Observable
 public final class WindowControlsSafeAreaInsetModel {
 
-    var minX: CGFloat = .zero
+    public var minX: CGFloat = .zero
     var installed: Bool = false
 
     private weak var containerView: UIView?
